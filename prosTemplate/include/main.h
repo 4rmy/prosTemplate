@@ -1,5 +1,5 @@
 #include "prosTemplate/prosTemplate.h"
-
+#include "pros/apix.h"
 /**
  * \file main.h
  *
@@ -15,6 +15,8 @@
  */
 
 extern Drive chassis;
+
+void AutonInit();
 
 #ifndef _PROS_MAIN_H_
 #define _PROS_MAIN_H_

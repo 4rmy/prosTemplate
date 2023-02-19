@@ -1,4 +1,7 @@
 #include "main.h"
+#include "pros/imu.hpp"
+#include "pros/misc.h"
+#include <ios>
 /**
  * Bot chassis setup. Nessicary for driving and autons.
  * 
@@ -14,20 +17,13 @@ void tank();
 void arcade();
 void inverseArcade();
 
-void on_center_button() {
-	static bool pressed = false;
-	pressed = !pressed;
-	if (pressed) {
-		pros::lcd::set_text(2, "I was pressed!");
-	} else {
-		pros::lcd::clear_line(2);
-	}
-}
-
 
 void initialize() {
+	pros::Imu IMU (chassis.IMUport);
+	IMU.reset();
 	pros::lcd::initialize();
 	prosTemplate::lcdInit();
+	AutonInit();
 }
 
 /**
@@ -65,7 +61,7 @@ void autonomous() {
 	 * Built in auton selector to better stone all functioning autons
 	 * for your bot.
 	 */
-	prosTemplate::auton::AutonSelector({});
+	prosTemplate::auton::RunAuton(); // REQUIRED FOR AUTON SELECTOR
 }
 
 /**
@@ -82,7 +78,7 @@ void autonomous() {
  * task, not resume it from where it left off.
  */
 void opcontrol() {
-	pros::Controller master(pros::E_CONTROLLER_MASTER);
+	pros::Controller controller(pros::E_CONTROLLER_MASTER);
 
 	while (true) {
 		/**
@@ -92,18 +88,26 @@ void opcontrol() {
 		arcade();
 		// inverseArcade();
 
-		pros::delay(prosTemplate::delay);
+		pros::delay(prosTemplate::delay); // LEAVE THIS DELAY AS IS
+													   // IT IS NESSICARY FOR TIMING
 	}
 }
 
 void tank() {
-
+	pros::Controller controller(pros::E_CONTROLLER_MASTER);
+	chassis.setTank(controller.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y)/100, controller.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_Y)/100);
 }
 
 void arcade() {
-
+	pros::Controller controller(pros::E_CONTROLLER_MASTER);
+	int left = controller.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y) + controller.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_X);
+	int right = controller.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y) - controller.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_X);
+	chassis.setTank(left, right);
 }
 
 void inverseArcade() {
-
+	pros::Controller controller(pros::E_CONTROLLER_MASTER);
+	int left = controller.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_X) + controller.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y);
+	int right = controller.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_X) - controller.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y);
+	chassis.setTank(left, right);
 }

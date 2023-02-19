@@ -1,5 +1,5 @@
 #include "api.h"
-#include <functional>
+#include "pros/motors.hpp"
 
 using namespace std;
 
@@ -7,8 +7,15 @@ class Drive {
     public:
         int leftDrive[3] = {};
         int rightDrive[3] = {};
-        float ratio;
-        int IMUport;
+        float ratio = 0;
+        int IMUport = 0;
+        void setTank(int left, int right);
+        void BuildChassis();
+        void SetTurnPid(double target, int TurnSpeed);
+        void SetDrivePid(double target, int DriveSpeed);
+        void WaitDrive();
+        void CheckTurn();
+        void CheckDrive();
 };
 
 class Auton {
@@ -21,7 +28,6 @@ class Auton {
 class prosTemplate {
     private:
         static inline int autonCount = 0;
-        static inline int selectedAuton = 0;
         static Auton autons[];
     public:
         static const int delay = 20;
@@ -31,5 +37,6 @@ class prosTemplate {
             public:
                 static void AddAuton(Auton auton);
                 static void AutonSelector();
+                static void RunAuton();
         };
 };
