@@ -24,6 +24,7 @@ void initialize() {
 	pros::lcd::initialize();
 	prosTemplate::lcdInit();
 	AutonInit();
+	prosTemplate::auton::AutonSelector();
 }
 
 /**
@@ -93,6 +94,10 @@ void opcontrol() {
 	}
 }
 
+/**
+ * @brief Drive functions
+ * Simple, ready to go out of the box, drive functions.
+ */
 void tank() {
 	pros::Controller controller(pros::E_CONTROLLER_MASTER);
 	chassis.setTank(controller.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y)/100, controller.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_Y)/100);

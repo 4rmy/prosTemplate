@@ -10,10 +10,10 @@ class Drive {
         float ratio = 0;
         int IMUport = 0;
         void setTank(int left, int right);
-        void BuildChassis();
         void SetTurnPid(double target, int TurnSpeed);
         void SetDrivePid(double target, int DriveSpeed);
-        void WaitDrive();
+        void Wait();
+    private:
         void CheckTurn();
         void CheckDrive();
 };
@@ -33,6 +33,7 @@ class prosTemplate {
         static const int delay = 20;
         static void lcdInit();
         static inline int selected = 0;
+        static inline int hue = 227;
         class auton {
             public:
                 static void AddAuton(Auton auton);
