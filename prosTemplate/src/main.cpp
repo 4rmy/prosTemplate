@@ -21,10 +21,10 @@ void inverseArcade();
 void initialize() {
 	pros::Imu IMU (chassis.IMUport);
 	IMU.reset();
-	pros::lcd::initialize();
+	//pros::lcd::initialize();
 	prosTemplate::lcdInit();
 	AutonInit();
-	prosTemplate::auton::AutonSelector();
+	auton::AutonSelector();
 }
 
 /**
@@ -62,7 +62,7 @@ void autonomous() {
 	 * Built in auton selector to better stone all functioning autons
 	 * for your bot.
 	 */
-	prosTemplate::auton::RunAuton(); // REQUIRED FOR AUTON SELECTOR
+	auton::RunAuton(); // REQUIRED FOR AUTON SELECTOR
 }
 
 /**

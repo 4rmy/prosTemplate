@@ -26,18 +26,18 @@ class Auton {
 };
 
 class prosTemplate {
-    private:
+    public:
         static inline int autonCount = 0;
         static Auton autons[];
-    public:
         static const int delay = 20;
         static void lcdInit();
         static inline int selected = 0;
         static inline int hue = 227;
-        class auton {
-            public:
-                static void AddAuton(Auton auton);
-                static void AutonSelector();
-                static void RunAuton();
-        };
+};
+
+class auton {
+    public:
+        static void AddAuton(Auton auton);
+        static void AutonSelector();
+        static void RunAuton();
 };

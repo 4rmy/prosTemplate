@@ -1,21 +1,8 @@
 #include "prosTemplate.h"
+#include "api.h"
 #include "display/lv_core/lv_obj.h"
-#include "display/lv_misc/lv_area.h"
+#include "display/lv_core/lv_style.h"
 #include "display/lv_objx/lv_label.h"
-#include "display/lv_objx/lv_win.h"
-#include "display/lv_version.h"
-#include "pros/imu.hpp"
-#include "pros/motors.hpp"
-#include "pros/optical.h"
-#include "pros/rtos.h"
-#include "pros/rtos.hpp"
-#include <array>
-#include <cmath>
-#include <functional>
-#include <initializer_list>
-#include <iostream>
-#include <iterator>
-#include <vector>
 
 double targetAngle = 0;
 int leftTurnSpeed = 0;
@@ -29,6 +16,8 @@ int leftDriveSpeed = 0;
 int rightDriveSpeed = 0;
 bool driving = false;
 
+Auton prosTemplate::autons[]{};
+
 double boundAngle(double angle) {
     while (angle <= 0) {
         angle += 360;
@@ -40,18 +29,15 @@ double boundAngle(double angle) {
 }
 
 void prosTemplate::lcdInit() {
-    lv_theme_t *th = lv_theme_alien_init(prosTemplate::hue, NULL); //Set a HUE value and keep font default RED
-	lv_theme_set_current(th);
-
-    lv_obj_t *bg = lv_scr_act();
-
-    lv_obj_t *label = lv_label_create(bg, NULL);
-    lv_label_set_text(label, "Hello pros Template User");
+    lv_obj_t * text = lv_label_create(lv_scr_act(), NULL);
+    lv_label_set_text(text, "Hello prosTemplate User!");
+    lv_obj_set_x(text, 5);
+    lv_obj_set_y(text, 5);
 }
 
-void prosTemplate::auton::AddAuton(Auton auton) {
-    autons[autonCount] = auton;
-    autonCount++;
+void auton::AddAuton(Auton auton) {
+    prosTemplate::autons[prosTemplate::autonCount] = auton;
+    prosTemplate::autonCount++;
 }
 
 Auton::Auton(std::string name, std::function<void()> auton) {
@@ -59,12 +45,12 @@ Auton::Auton(std::string name, std::function<void()> auton) {
     this->auton = auton;
 }
 
-void prosTemplate::auton::AutonSelector() {
+void auton::AutonSelector() {
     
 }
 
-void prosTemplate::auton::RunAuton() {
-    autons[selected].auton();
+void auton::RunAuton() {
+    prosTemplate::autons[prosTemplate::selected].auton();
 }
 
 void Drive::setTank(int left, int right) {
@@ -85,11 +71,11 @@ void Drive::CheckTurn() {
 
         // within 5 degrees
         if (IMU.get_heading() > boundAngle(targetAngle-5) || IMU.get_heading() < boundAngle(targetAngle+5)) {
-            setTank(leftTurnSpeed/2, rightTurnSpeed/2);
+            Drive::setTank(leftTurnSpeed/2, rightTurnSpeed/2);
         } else if (IMU.get_heading() > boundAngle(targetAngle-1) || IMU.get_heading() < boundAngle(targetAngle+1)) {
-            setTank(leftTurnSpeed/3, rightTurnSpeed/3);
+            Drive::setTank(leftTurnSpeed/3, rightTurnSpeed/3);
         } else if (IMU.get_heading() > boundAngle(targetAngle-0.5) || IMU.get_heading() < boundAngle(targetAngle+0.5)) {
-            setTank(0, 0);
+            Drive::setTank(0, 0);
             turning = false;
         }
         pros::delay(prosTemplate::delay);
@@ -107,35 +93,35 @@ void Drive::SetTurnPid(double target, int TurnSpeed) {
 
     // set tank correct direction
     if (target < 0) {
-        setTank(-TurnSpeed, TurnSpeed);
+        Drive::setTank(-TurnSpeed, TurnSpeed);
         leftTurnSpeed = -TurnSpeed;
         rightTurnSpeed = TurnSpeed;
     } else if (target > 0) {
-        setTank(TurnSpeed, -TurnSpeed);
+        Drive::setTank(TurnSpeed, -TurnSpeed);
         leftTurnSpeed = TurnSpeed;
         rightTurnSpeed = -TurnSpeed;
     }
 
     // set correct action for wait
     turning = true;
-    pros::Task turnTask(&Drive::CheckTurn, "turn");
+    //pros::Task turnTask(&Drive::CheckTurn, "turn");
 }
 
 void (Drive::*CheckDrive)(void);
 
 void Drive::CheckDrive()  {
-    pros::Imu IMU (IMUport);
+    pros::Imu IMU (Drive::IMUport);
     while (driving) {
         currentX += IMU.get_accel().x;
         currentZ += IMU.get_accel().z;
         double distance = sqrt((currentX*currentX) + (currentZ*currentX));
 
         if (distance > targetDistance-3 || distance < targetDistance+3) {
-            setTank(leftDriveSpeed/2, rightDriveSpeed/2);
+            Drive::setTank(leftDriveSpeed/2, rightDriveSpeed/2);
         } else if (distance > targetDistance-1 || distance < targetDistance+1) {
-            setTank(leftDriveSpeed/3, rightDriveSpeed/3);
+            Drive::setTank(leftDriveSpeed/3, rightDriveSpeed/3);
         } else if (distance > targetDistance-0.5 || distance < targetDistance+0.5) {
-            setTank(0, 0);
+            Drive::setTank(0, 0);
             driving = false;
         }
         pros::delay(prosTemplate::delay);
@@ -151,13 +137,13 @@ void Drive::SetDrivePid(double target, int DriveSpeed) {
     targetDistance = target;
 
     if (target < 0) {
-        setTank(-DriveSpeed, -DriveSpeed);
+        Drive::setTank(-DriveSpeed, -DriveSpeed);
     } else if (target > 0) {
-        setTank(DriveSpeed, DriveSpeed);
+        Drive::setTank(DriveSpeed, DriveSpeed);
     }
 
     driving = true;
-    pros::Task driveTask(&Drive::CheckDrive, "turn");
+    //pros::Task driveTask(&Drive::CheckDrive, "turn");
 }
 
 void Drive::Wait() {

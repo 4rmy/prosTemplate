@@ -1,4 +1,4 @@
-#include "prosTemplate/prosTemplate.h"
+#include "../src/prosTemplate.h"
 #include "pros/apix.h"
 /**
  * \file main.h

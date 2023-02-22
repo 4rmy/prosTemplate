@@ -11,5 +11,5 @@ void basicAuton() {
 }
 
 void AutonInit() {
-    prosTemplate::auton::AddAuton(Auton("Basic Auton", basicAuton));
+    auton::AddAuton(Auton("Basic Auton", basicAuton));
 }
