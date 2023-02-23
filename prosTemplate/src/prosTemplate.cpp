@@ -80,22 +80,10 @@ void auton::AutonSelector() {
     lv_obj_t * label = lv_label_create(autonbtn, NULL);
     lv_label_set_text(label, prosTemplate::autons[0].name.c_str());
     lv_label_set_align(label, LV_ALIGN_CENTER);
-    lv_obj_set_x(autonbtn, width/prosTemplate::autonCount);
-    lv_obj_set_y(autonbtn, (height/2)-(btnWidth/2));
+    lv_obj_set_x(autonbtn, width/2);
+    lv_obj_set_y(autonbtn, height/2);
     lv_obj_set_width(autonbtn, btnWidth);
     lv_obj_set_height(autonbtn, btnWidth);
-
-    for (int i = 1; i < prosTemplate::autonCount; i++) {
-        int btnWidth = 150;
-        autonbtn = lv_btn_create(canvas, NULL);
-        label = lv_label_create(autonbtn, NULL);
-        lv_label_set_text(label, prosTemplate::autons[i].name.c_str());
-        lv_label_set_align(label, LV_ALIGN_CENTER);
-        lv_obj_set_x(autonbtn, width/prosTemplate::autonCount);
-        lv_obj_set_y(autonbtn, (height/2)-(btnWidth/2));
-        lv_obj_set_width(autonbtn, btnWidth);
-        lv_obj_set_height(autonbtn, btnWidth);
-    }
 }
 
 void auton::RunAuton() {

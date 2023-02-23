@@ -24,7 +24,7 @@ void initialize() {
 	//pros::lcd::initialize();
 	prosTemplate::lcdInit();
 	AutonInit();
-	auton::AutonSelector();
+	//auton::AutonSelector();
 }
 
 /**
