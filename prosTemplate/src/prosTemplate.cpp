@@ -2,7 +2,13 @@
 #include "api.h"
 #include "display/lv_core/lv_obj.h"
 #include "display/lv_core/lv_style.h"
+#include "display/lv_misc/lv_area.h"
+#include "display/lv_misc/lv_color.h"
+#include "display/lv_objx/lv_btn.h"
+#include "display/lv_objx/lv_canvas.h"
 #include "display/lv_objx/lv_label.h"
+#include "display/lv_themes/lv_theme.h"
+#include "display/lv_themes/lv_theme_night.h"
 
 double targetAngle = 0;
 int leftTurnSpeed = 0;
@@ -29,7 +35,13 @@ double boundAngle(double angle) {
 }
 
 void prosTemplate::lcdInit() {
-    lv_obj_t * text = lv_label_create(lv_scr_act(), NULL);
+    lv_obj_t * canvas = lv_canvas_create(lv_scr_act(), NULL);
+    lv_obj_set_x(canvas, 0);
+    lv_obj_set_y(canvas, 0);
+    lv_obj_set_width(canvas, 480);
+    lv_obj_set_height(canvas, 270);
+
+    lv_obj_t * text = lv_label_create(canvas, NULL);
     lv_label_set_text(text, "Hello prosTemplate User!");
     lv_obj_set_x(text, 5);
     lv_obj_set_y(text, 5);
@@ -46,7 +58,44 @@ Auton::Auton(std::string name, std::function<void()> auton) {
 }
 
 void auton::AutonSelector() {
-    
+    int width = 480;
+    int height = 270;
+
+    lv_theme_t * th = lv_theme_get_night();
+    lv_theme_set_current(th);
+
+    lv_obj_t * canvas = lv_canvas_create(lv_scr_act(), NULL);
+    lv_obj_set_x(canvas, 0);
+    lv_obj_set_y(canvas, 0);
+    lv_obj_set_width(canvas, width);
+    lv_obj_set_height(canvas, height);
+
+    lv_obj_t * header = lv_label_create(canvas, NULL);
+    lv_obj_set_x(header, 5);
+    lv_obj_set_y(header, 5);
+    lv_label_set_text(header, "Auton Selector: ");
+
+    int btnWidth = 150;
+    lv_obj_t * autonbtn = lv_btn_create(canvas, NULL);
+    lv_obj_t * label = lv_label_create(autonbtn, NULL);
+    lv_label_set_text(label, prosTemplate::autons[0].name.c_str());
+    lv_label_set_align(label, LV_ALIGN_CENTER);
+    lv_obj_set_x(autonbtn, width/prosTemplate::autonCount);
+    lv_obj_set_y(autonbtn, (height/2)-(btnWidth/2));
+    lv_obj_set_width(autonbtn, btnWidth);
+    lv_obj_set_height(autonbtn, btnWidth);
+
+    for (int i = 1; i < prosTemplate::autonCount; i++) {
+        int btnWidth = 150;
+        autonbtn = lv_btn_create(canvas, NULL);
+        label = lv_label_create(autonbtn, NULL);
+        lv_label_set_text(label, prosTemplate::autons[i].name.c_str());
+        lv_label_set_align(label, LV_ALIGN_CENTER);
+        lv_obj_set_x(autonbtn, width/prosTemplate::autonCount);
+        lv_obj_set_y(autonbtn, (height/2)-(btnWidth/2));
+        lv_obj_set_width(autonbtn, btnWidth);
+        lv_obj_set_height(autonbtn, btnWidth);
+    }
 }
 
 void auton::RunAuton() {

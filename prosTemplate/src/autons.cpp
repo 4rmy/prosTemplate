@@ -10,6 +10,12 @@ void basicAuton() {
     chassis.Wait();
 }
 
+void fancyAuton() {
+    chassis.SetDrivePid(12, DRIVE_SPEED);
+    chassis.Wait();
+}
+
 void AutonInit() {
     auton::AddAuton(Auton("Basic Auton", basicAuton));
+    auton::AddAuton(Auton("Fancy Auton", fancyAuton));
 }
