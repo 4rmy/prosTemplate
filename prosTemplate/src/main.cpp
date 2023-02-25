@@ -7,9 +7,10 @@
  * 
  */
 Drive chassis {
-	{1, 2, 3},
-	{4, 5, 6},
-	(float) 60/30,
+	{1, 2, 3}, // negative for reverse
+	{4, 5, 6}, // negative for reverse
+	(float) 60/30, // powered gear divided by driven gear
+	3.25, // in inches
 	14
 };
 
@@ -21,10 +22,9 @@ void inverseArcade();
 void initialize() {
 	pros::Imu IMU (chassis.IMUport);
 	IMU.reset();
-	//pros::lcd::initialize();
 	prosTemplate::lcdInit();
 	AutonInit();
-	//auton::AutonSelector();
+	auton::AutonSelector();
 }
 
 /**

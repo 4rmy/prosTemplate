@@ -2,13 +2,16 @@
 #include "api.h"
 #include "display/lv_core/lv_obj.h"
 #include "display/lv_core/lv_style.h"
+#include "display/lv_draw/lv_draw_line.h"
+#include "display/lv_draw/lv_draw_rect.h"
 #include "display/lv_misc/lv_area.h"
 #include "display/lv_misc/lv_color.h"
 #include "display/lv_objx/lv_btn.h"
+#include "display/lv_objx/lv_btnm.h"
 #include "display/lv_objx/lv_canvas.h"
 #include "display/lv_objx/lv_label.h"
-#include "display/lv_themes/lv_theme.h"
-#include "display/lv_themes/lv_theme_night.h"
+#include <cstddef>
+#include <iterator>
 
 double targetAngle = 0;
 int leftTurnSpeed = 0;
@@ -22,9 +25,19 @@ int leftDriveSpeed = 0;
 int rightDriveSpeed = 0;
 bool driving = false;
 
-Auton prosTemplate::autons[]{};
+Auton prosTemplate::autons[9] = {
+    Auton("Blank", NULL),
+    Auton("Blank", NULL),
+    Auton("Blank", NULL),
+    Auton("Blank", NULL),
+    Auton("Blank", NULL),
+    Auton("Blank", NULL),
+    Auton("Blank", NULL),
+    Auton("Blank", NULL),
+    Auton("Blank", NULL)
+};
 
-double boundAngle(double angle) {
+double boundAngle(double angle) { 
     while (angle <= 0) {
         angle += 360;
     }
@@ -57,37 +70,186 @@ Auton::Auton(std::string name, std::function<void()> auton) {
     this->auton = auton;
 }
 
-void auton::AutonSelector() {
-    int width = 480;
-    int height = 270;
+void draw();
 
-    lv_theme_t * th = lv_theme_get_night();
-    lv_theme_set_current(th);
+lv_res_t atnAction0(lv_obj_t *btn){
+	draw();
+    prosTemplate::selected=0;
+    return LV_RES_OK;
+}
+lv_res_t atnAction1(lv_obj_t *btn){
+	draw();
+    prosTemplate::selected=1;
+    return LV_RES_OK;
+}
+lv_res_t atnAction2(lv_obj_t *btn){
+	draw();
+    prosTemplate::selected=2;
+    return LV_RES_OK;
+}
+lv_res_t atnAction3(lv_obj_t *btn){
+	draw();
+    prosTemplate::selected=3;
+    return LV_RES_OK;
+}
+lv_res_t atnAction4(lv_obj_t *btn){
+	draw();
+    prosTemplate::selected=4;
+    return LV_RES_OK;
+}
+lv_res_t atnAction5(lv_obj_t *btn){
+	draw();
+    prosTemplate::selected=5;
+    return LV_RES_OK;
+}
+lv_res_t atnAction6(lv_obj_t *btn){
+	draw();
+    prosTemplate::selected=6;
+    return LV_RES_OK;
+}
+lv_res_t atnAction7(lv_obj_t *btn){
+	draw();
+    prosTemplate::selected=7;
+    return LV_RES_OK;
+}
+lv_res_t atnAction8(lv_obj_t *btn){
+	draw();
+    prosTemplate::selected=8;
+    return LV_RES_OK;
+}
 
+void draw() {
     lv_obj_t * canvas = lv_canvas_create(lv_scr_act(), NULL);
     lv_obj_set_x(canvas, 0);
     lv_obj_set_y(canvas, 0);
-    lv_obj_set_width(canvas, width);
-    lv_obj_set_height(canvas, height);
+    lv_obj_set_width(canvas, 480);
+    lv_obj_set_height(canvas, 240);
 
-    lv_obj_t * header = lv_label_create(canvas, NULL);
-    lv_obj_set_x(header, 5);
-    lv_obj_set_y(header, 5);
-    lv_label_set_text(header, "Auton Selector: ");
+    int x = 0;
+    int i = 0;
 
-    int btnWidth = 150;
-    lv_obj_t * autonbtn = lv_btn_create(canvas, NULL);
-    lv_obj_t * label = lv_label_create(autonbtn, NULL);
-    lv_label_set_text(label, prosTemplate::autons[0].name.c_str());
-    lv_label_set_align(label, LV_ALIGN_CENTER);
-    lv_obj_set_x(autonbtn, width/2);
-    lv_obj_set_y(autonbtn, height/2);
-    lv_obj_set_width(autonbtn, btnWidth);
-    lv_obj_set_height(autonbtn, btnWidth);
+    lv_obj_t * atn1 = lv_btn_create(canvas, NULL);
+    lv_obj_set_x(atn1, 5 + x*85);
+    lv_obj_set_y(atn1, 5);
+    lv_obj_set_width(atn1, 75);
+    lv_obj_set_height(atn1, 75);
+    lv_btn_set_action(atn1, LV_BTN_ACTION_CLICK, *atnAction0);
+    lv_obj_t * atn1lbl = lv_label_create(atn1, NULL);
+    lv_label_set_text(atn1lbl, prosTemplate::autons[i].name.c_str());
+    lv_label_set_align(atn1lbl, LV_LABEL_ALIGN_CENTER);
+
+    x++;
+    i++;
+
+    lv_obj_t * atn2 = lv_btn_create(canvas, NULL);
+    lv_obj_set_x(atn2, 5 + x*85);
+    lv_obj_set_y(atn2, 5);
+    lv_obj_set_width(atn2, 75);
+    lv_obj_set_height(atn2, 75);
+    lv_btn_set_action(atn2, LV_BTN_ACTION_CLICK, *atnAction1);
+    lv_obj_t * atn2lbl = lv_label_create(atn2, NULL);
+    lv_label_set_text(atn2lbl, prosTemplate::autons[i].name.c_str());
+    lv_label_set_align(atn2lbl, LV_LABEL_ALIGN_CENTER);
+
+    x++;
+    i++;
+
+    lv_obj_t * atn3 = lv_btn_create(canvas, NULL);
+    lv_obj_set_x(atn3, 5 + x*85);
+    lv_obj_set_y(atn3, 5);
+    lv_obj_set_width(atn3, 75);
+    lv_obj_set_height(atn3, 75);
+    lv_btn_set_action(atn3, LV_BTN_ACTION_CLICK, *atnAction2);
+    lv_obj_t * atn3lbl = lv_label_create(atn3, NULL);
+    lv_label_set_text(atn3lbl, prosTemplate::autons[i].name.c_str());
+    lv_label_set_align(atn3lbl, LV_LABEL_ALIGN_CENTER);
+
+    x++;
+    i++;
+
+    lv_obj_t * atn4 = lv_btn_create(canvas, NULL);
+    lv_obj_set_x(atn4, 5 + x*85);
+    lv_obj_set_y(atn4, 5);
+    lv_obj_set_width(atn4, 75);
+    lv_obj_set_height(atn4, 75);
+    lv_btn_set_action(atn4, LV_BTN_ACTION_CLICK, *atnAction3);
+    lv_obj_t * atn4lbl = lv_label_create(atn4, NULL);
+    lv_label_set_text(atn4lbl, prosTemplate::autons[i].name.c_str());
+    lv_label_set_align(atn4lbl, LV_LABEL_ALIGN_CENTER);
+
+    x = 0;
+    i++;
+
+    lv_obj_t * atn5 = lv_btn_create(canvas, NULL);
+    lv_obj_set_x(atn5, 5 + x*85);
+    lv_obj_set_y(atn5, 160);
+    lv_obj_set_width(atn5, 75);
+    lv_obj_set_height(atn5, 75);
+    lv_btn_set_action(atn5, LV_BTN_ACTION_CLICK, *atnAction4);
+    lv_obj_t * atn5lbl = lv_label_create(atn5, NULL);
+    lv_label_set_text(atn5lbl, prosTemplate::autons[i].name.c_str());
+    lv_label_set_align(atn5lbl, LV_LABEL_ALIGN_CENTER);
+
+    x++;
+    i++;
+
+    lv_obj_t * atn6 = lv_btn_create(canvas, NULL);
+    lv_obj_set_x(atn6, 5 + x*85);
+    lv_obj_set_y(atn6, 160);
+    lv_obj_set_width(atn6, 75);
+    lv_obj_set_height(atn6, 75);
+    lv_btn_set_action(atn6, LV_BTN_ACTION_CLICK, *atnAction5);
+    lv_obj_t * atn6lbl = lv_label_create(atn6, NULL);
+    lv_label_set_text(atn6lbl, prosTemplate::autons[i].name.c_str());
+    lv_label_set_align(atn6lbl, LV_LABEL_ALIGN_CENTER);
+
+    x++;
+    i++;
+
+    lv_obj_t * atn7 = lv_btn_create(canvas, NULL);
+    lv_obj_set_x(atn7, 5 + x*85);
+    lv_obj_set_y(atn7, 160);
+    lv_obj_set_width(atn7, 75);
+    lv_obj_set_height(atn7, 75);
+    lv_btn_set_action(atn7, LV_BTN_ACTION_CLICK, *atnAction6);
+    lv_obj_t * atn7lbl = lv_label_create(atn7, NULL);
+    lv_label_set_text(atn7lbl, prosTemplate::autons[i].name.c_str());
+    lv_label_set_align(atn7lbl, LV_LABEL_ALIGN_CENTER);
+
+    x++;
+    i++;
+
+    lv_obj_t * atn8 = lv_btn_create(canvas, NULL);
+    lv_obj_set_x(atn8, 5 + x*85);
+    lv_obj_set_y(atn8, 160);
+    lv_obj_set_width(atn8, 75);
+    lv_obj_set_height(atn8, 75);
+    lv_btn_set_action(atn8, LV_BTN_ACTION_CLICK, *atnAction7);
+    lv_obj_t * atn8lbl = lv_label_create(atn8, NULL);
+    lv_label_set_text(atn8lbl, prosTemplate::autons[i].name.c_str());
+    lv_label_set_align(atn8lbl, LV_LABEL_ALIGN_CENTER);
+
+    i++;
+
+    lv_obj_t * skills = lv_btn_create(canvas, NULL);
+    lv_obj_set_x(skills, 400);
+    lv_obj_set_y(skills, 80);
+    lv_obj_set_width(skills, 75);
+    lv_obj_set_height(skills, 75);
+    lv_btn_set_action(skills, LV_BTN_ACTION_CLICK, *atnAction8);
+    lv_obj_t * skillslbl = lv_label_create(skills, NULL);
+    lv_label_set_text(skillslbl, prosTemplate::autons[i].name.c_str());
+    lv_label_set_align(skillslbl, LV_LABEL_ALIGN_CENTER);
+}
+
+void auton::AutonSelector() {
+    draw();
 }
 
 void auton::RunAuton() {
-    prosTemplate::autons[prosTemplate::selected].auton();
+    if (prosTemplate::autons[prosTemplate::selected].auton != NULL) {
+        prosTemplate::autons[prosTemplate::selected].auton();
+    }
 }
 
 void Drive::setTank(int left, int right) {

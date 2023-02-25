@@ -8,6 +8,7 @@ class Drive {
         int leftDrive[3] = {};
         int rightDrive[3] = {};
         float ratio = 0;
+        float wheelsize = 0;
         int IMUport = 0;
         void setTank(int left, int right);
         void SetTurnPid(double target, int TurnSpeed);

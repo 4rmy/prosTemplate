@@ -7,28 +7,43 @@ int DRIVE_SPEED = 110; // drive spped is 110/127
 int TURN_SPEED = 87;   // drive spped is 87/127
                        // suggested for more accuracy with IMU
 
-void basicAuton() {
+void Auton1() {
     chassis.SetDrivePid(12, DRIVE_SPEED);
     chassis.Wait();
 }
 
-void fancyAuton() {
-    chassis.SetDrivePid(12, DRIVE_SPEED);
-    chassis.Wait();
+void Auton2() {
+}
+
+void Auton3() {
+}
+
+void Auton4() {
+}
+
+void Auton5() {
+}
+
+void Auton6() {
+}
+
+void Auton7() {
+}
+
+void Auton8() {
+}
+
+void ProgSkills() {
 }
 
 void AutonInit() {
-    auton::AddAuton(Auton("Basic Auton", basicAuton));
-    auton::AddAuton(Auton("Fancy Auton", fancyAuton));
-    
-    lv_obj_t * canvas = lv_canvas_create(lv_scr_act(), NULL);
-    lv_obj_set_x(canvas, 0);
-    lv_obj_set_y(canvas, 0);
-    lv_obj_set_width(canvas, 480);
-    lv_obj_set_height(canvas, 270);
-
-    lv_obj_t * text = lv_label_create(canvas, NULL);
-    lv_label_set_text(text, "Hello prosTemplate User!");
-    lv_obj_set_x(text, 5);
-    lv_obj_set_y(text, 5);
+    auton::AddAuton(Auton("Auton 1", Auton1));
+    auton::AddAuton(Auton("Auton 2", Auton2));
+    auton::AddAuton(Auton("Auton 3", Auton3));
+    auton::AddAuton(Auton("Auton 4", Auton4));
+    auton::AddAuton(Auton("Auton 5", Auton5));
+    auton::AddAuton(Auton("Auton 6", Auton6));
+    auton::AddAuton(Auton("Auton 7", Auton7));
+    auton::AddAuton(Auton("Auton 8", Auton8));
+    auton::AddAuton(Auton("Prog\nSkills", ProgSkills));
 }
