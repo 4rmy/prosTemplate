@@ -15,7 +15,6 @@
 #include "display/lv_objx/lv_label.h"
 #include <cstddef>
 #include <iterator>
-#include "242.h"
 
 double targetAngle = 0;
 int leftTurnSpeed = 0;
