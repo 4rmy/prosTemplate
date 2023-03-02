@@ -13,6 +13,8 @@
 #include "display/lv_objx/lv_canvas.h"
 #include "display/lv_objx/lv_img.h"
 #include "display/lv_objx/lv_label.h"
+#include "pros/llemu.hpp"
+#include "pros/motors.hpp"
 #include <cstddef>
 #include <iterator>
 
@@ -21,8 +23,6 @@ int leftTurnSpeed = 0;
 int rightTurnSpeed = 0;
 bool turning = false;
 
-double currentX = 0.0;
-double currentZ = 0.0;
 double targetDistance = 0.0;
 int leftDriveSpeed = 0;
 int rightDriveSpeed = 0;
@@ -50,17 +50,31 @@ double boundAngle(double angle) {
     return angle;
 }
 
-void prosTemplate::lcdInit() {
-    lv_obj_t * canvas = lv_canvas_create(lv_scr_act(), NULL);
+void prosTemplate::lcd::Init() {
+    prosTemplate::lcd::canvas = lv_canvas_create(lv_scr_act(), NULL);
     lv_obj_set_x(canvas, 0);
     lv_obj_set_y(canvas, 0);
     lv_obj_set_width(canvas, 480);
-    lv_obj_set_height(canvas, 270);
+    lv_obj_set_height(canvas, 240);
+}
 
-    lv_obj_t * text = lv_label_create(canvas, NULL);
-    lv_label_set_text(text, "Hello prosTemplate User!");
-    lv_obj_set_x(text, 5);
-    lv_obj_set_y(text, 5);
+void prosTemplate::lcd::print(std::int16_t line, const char *fmt) {
+    if (canvas == nullptr) {
+        Init();
+    }
+    
+    lv_obj_t * lbl = lv_label_create(canvas, NULL);
+    lv_obj_set_x(lbl, 5);
+    lv_obj_set_y(lbl, line*16);
+    lv_label_set_text(lbl, fmt);
+}
+
+void prosTemplate::lcd::clear() {
+    canvas = canvas = lv_canvas_create(lv_scr_act(), NULL);
+    lv_obj_set_x(canvas, 0);
+    lv_obj_set_y(canvas, 0);
+    lv_obj_set_width(canvas, 480);
+    lv_obj_set_height(canvas, 240);
 }
 
 void auton::AddAuton(Auton auton) {
@@ -150,7 +164,7 @@ void draw() {
     lv_obj_set_x(canvas, 0);
     lv_obj_set_y(canvas, 0);
     lv_obj_set_width(canvas, 480);
-    lv_obj_set_height(canvas, 240);
+    lv_obj_set_height(canvas, 270);
 
     int x = 0;
     int i = 0;
@@ -300,6 +314,7 @@ void auton::RunAuton() {
 void Drive::setTank(int left, int right) {
     std::vector<std::int8_t> leftside = {static_cast<signed char>(leftDrive[0]), static_cast<signed char>(leftDrive[1]), static_cast<signed char>(leftDrive[2])};
     std::vector<std::int8_t> rightside = {static_cast<signed char>(rightDrive[0]), static_cast<signed char>(rightDrive[1]), static_cast<signed char>(rightDrive[2])};
+    
     pros::Motor_Group leftMG {leftside};
     pros::Motor_Group rightMG {rightside};
 
@@ -307,9 +322,7 @@ void Drive::setTank(int left, int right) {
     rightMG.move_voltage(right*12000);
 }
 
-void (Drive::*CheckTurn)(void);
-
-void Drive::CheckTurn() {
+void Drive::CheckTurn(void* param) {
     pros::Imu IMU (IMUport);
     while (turning) {
 
@@ -348,23 +361,21 @@ void Drive::SetTurnPid(double target, int TurnSpeed) {
 
     // set correct action for wait
     turning = true;
-    //pros::Task turnTask(&Drive::CheckTurn, "turn");
+    //pros::Task turnTask(&Drive::CheckTurn);
 }
 
 void (Drive::*CheckDrive)(void);
 
-void Drive::CheckDrive()  {
+void Drive::CheckDrive(void* param)  {
     pros::Imu IMU (Drive::IMUport);
     while (driving) {
-        currentX += IMU.get_accel().x;
-        currentZ += IMU.get_accel().z;
-        double distance = sqrt((currentX*currentX) + (currentZ*currentX));
+        double distance = targetDistance - pros::Motor(leftDrive[0]).get_position();
 
-        if (distance > targetDistance-3 || distance < targetDistance+3) {
+        if (distance > targetDistance-(3*ratio*wheelsize*motorRPM) || distance < targetDistance+(3*ratio*wheelsize*motorRPM)) {
             Drive::setTank(leftDriveSpeed/2, rightDriveSpeed/2);
-        } else if (distance > targetDistance-1 || distance < targetDistance+1) {
+        } else if (distance > targetDistance-(1*ratio*wheelsize*motorRPM) || distance < targetDistance+(1*ratio*wheelsize*motorRPM)) {
             Drive::setTank(leftDriveSpeed/3, rightDriveSpeed/3);
-        } else if (distance > targetDistance-0.5 || distance < targetDistance+0.5) {
+        } else if (distance > targetDistance-(0.5*ratio*wheelsize*motorRPM) || distance < targetDistance+(0.5*ratio*wheelsize*motorRPM)) {
             Drive::setTank(0, 0);
             driving = false;
         }
@@ -374,11 +385,8 @@ void Drive::CheckDrive()  {
 
 void Drive::SetDrivePid(double target, int DriveSpeed) {
     pros::Imu IMU (IMUport);
-
     // reset local coords
-    currentX = 0.0;
-    currentZ = 0.0;
-    targetDistance = target;
+    targetDistance = (target*ratio*wheelsize*motorRPM) + pros::Motor(leftDrive[0]).get_position();
 
     if (target < 0) {
         Drive::setTank(-DriveSpeed, -DriveSpeed);
@@ -387,7 +395,7 @@ void Drive::SetDrivePid(double target, int DriveSpeed) {
     }
 
     driving = true;
-    //pros::Task driveTask(&Drive::CheckDrive, "turn");
+   // pros::Task driveTask(&Drive::CheckDrive);
 }
 
 void Drive::Wait() {

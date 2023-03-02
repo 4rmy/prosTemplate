@@ -10,7 +10,8 @@ Drive chassis {
 	{1, 2, 3}, // negative for reverse
 	{4, 5, 6}, // negative for reverse
 	(float) 60/30, // powered gear divided by driven gear
-	3.25, // in inches
+	3.25,
+	600, // in inches
 	14
 };
 
@@ -22,9 +23,9 @@ void inverseArcade();
 void initialize() {
 	pros::Imu IMU (chassis.IMUport);
 	IMU.reset();
-	prosTemplate::lcdInit();
 	AutonInit();
 	auton::AutonSelector();
+	prosTemplate::lcd::Init();
 }
 
 /**
@@ -82,6 +83,10 @@ void opcontrol() {
 	pros::Controller controller(pros::E_CONTROLLER_MASTER);
 
 	while (true) {
+		prosTemplate::lcd::clear();
+		prosTemplate::lcd::print(0, "Hello user!");
+		prosTemplate::lcd::print(1, "How are you?");
+		prosTemplate::lcd::print(2, "abcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcdabcd");
 		/**
 		 * Preset Driving methods for easy driver setup.
 		 */
